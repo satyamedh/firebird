@@ -116,6 +116,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAbout_Firebird, SIGNAL(triggered(bool)), this, SLOT(showAbout()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 
+    //Menu "View"
+    connect(ui->actionDark_Mode, SIGNAL(triggered(bool)), this, SLOT(setDarkMode(bool)));
+
     // Lang switch
     QStringList translations = QDir(QStringLiteral(":/i18n/i18n/")).entryList();
     translations << QStringLiteral("en_US.qm"); // Equal to no translation
@@ -176,6 +179,12 @@ MainWindow::MainWindow(QWidget *parent) :
     lcd.restoreGeometry(settings->value(QStringLiteral("extLCDGeometry")).toByteArray());
     restoreGeometry(settings->value(QStringLiteral("windowGeometry")).toByteArray());
     restoreState(settings->value(QStringLiteral("windowState")).toByteArray(), WindowStateVersion);
+
+    // Restore dark mode setting
+    bool darkModeEnabled = settings->value(QStringLiteral("darkMode"), false).toBool();
+    ui->actionDark_Mode->setChecked(darkModeEnabled);
+    if(darkModeEnabled)
+        setDarkMode(true);
 
     refillKitMenus();
 
@@ -727,6 +736,39 @@ void MainWindow::setUIEditMode(bool e)
 void MainWindow::showAbout()
 {
     aboutDialog.show();
+}
+
+void MainWindow::setDarkMode(bool enabled)
+{
+    settings->setValue(QStringLiteral("darkMode"), enabled);
+
+    if(enabled)
+    {
+        // Dark mode palette
+        QPalette darkPalette;
+        darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
+        darkPalette.setColor(QPalette::WindowText, Qt::white);
+        darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+        darkPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+        darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
+        darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+        darkPalette.setColor(QPalette::Text, Qt::white);
+        darkPalette.setColor(QPalette::Button, QColor(53, 53, 53));
+        darkPalette.setColor(QPalette::ButtonText, Qt::white);
+        darkPalette.setColor(QPalette::BrightText, Qt::red);
+        darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+        darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+        darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+
+        qApp->setPalette(darkPalette);
+        qApp->setStyleSheet(QStringLiteral("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }"));
+    }
+    else
+    {
+        // Restore default palette
+        qApp->setPalette(style()->standardPalette());
+        qApp->setStyleSheet(QString());
+    }
 }
 
 void MainWindow::isBusy(bool busy)
