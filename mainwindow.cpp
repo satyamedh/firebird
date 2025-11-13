@@ -116,9 +116,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAbout_Firebird, SIGNAL(triggered(bool)), this, SLOT(showAbout()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 
-    //Menu "View"
-    connect(ui->actionDark_Mode, SIGNAL(triggered(bool)), this, SLOT(setDarkMode(bool)));
-
     // Lang switch
     QStringList translations = QDir(QStringLiteral(":/i18n/i18n/")).entryList();
     translations << QStringLiteral("en_US.qm"); // Equal to no translation
@@ -182,9 +179,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Restore dark mode setting
     bool darkModeEnabled = settings->value(QStringLiteral("darkMode"), false).toBool();
-    ui->actionDark_Mode->setChecked(darkModeEnabled);
     if(darkModeEnabled)
-        setDarkMode(true);
+        qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("windows:darkmode=2"));
+    else
+        qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("windows:darkmode=0"));
+
+#ifdef Q_OS_WIN
+    // Windows-only: Create View menu and Dark Mode action
+    QMenu *menuView = new QMenu("&View", this);
+    QAction *darkModeAction = new QAction("&Dark Mode", this);
+    darkModeAction->setCheckable(true);
+    darkModeAction->setChecked(darkModeEnabled);
+
+    connect(darkModeAction, &QAction::toggled, this, [=](bool checked) {
+        if (checked != darkModeEnabled) {
+            settings.setValue("theme/darkMode", checked);
+            QMessageBox::information(this, "Theme Change", "Restarting to apply changes...");
+            QProcess::startDetached(QApplication::applicationFilePath(), QApplication::arguments());
+            QApplication::quit();
+        }
+    });
+
+    menuView->addAction(darkModeAction);
+    ui->menubar->addMenu(menuView);
+#endif
 
     refillKitMenus();
 

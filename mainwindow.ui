@@ -473,17 +473,10 @@
     <addaction name="actionAbout_Firebird"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>&amp;View</string>
-    </property>
-    <addaction name="actionDark_Mode"/>
-   </widget>
    <addaction name="menuEmulation"/>
    <addaction name="menuTools"/>
    <addaction name="menuState"/>
    <addaction name="menuFlash"/>
-   <addaction name="menuView"/>
    <addaction name="menuAbout"/>
   </widget>
   <action name="actionReset">
@@ -673,14 +666,6 @@
   <action name="actionLeavePTT">
    <property name="text">
     <string>Leave &amp;PTT</string>
-   </property>
-  </action>
-  <action name="actionDark_Mode">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Dark Mode</string>
    </property>
   </action>
  </widget>
