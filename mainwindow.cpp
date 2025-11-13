@@ -186,15 +186,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef Q_OS_WIN
     // Windows-only: Create View menu and Dark Mode action
-    QMenu *menuView = new QMenu("&View", this);
-    QAction *darkModeAction = new QAction("&Dark Mode", this);
+    QMenu *menuView = new QMenu(QStringLiteral("&View"), this);
+    QAction *darkModeAction = new QAction(QStringLiteral("&Dark Mode"), this);
     darkModeAction->setCheckable(true);
-    darkModeAction->setChecked(darkModeEnabled);
+    darkModeAction->setChecked(savedDarkMode);
 
     connect(darkModeAction, &QAction::toggled, this, [=](bool checked) {
-        if (checked != darkModeEnabled) {
-            settings.setValue("theme/darkMode", checked);
-            QMessageBox::information(this, "Theme Change", "Restarting to apply changes...");
+        if (checked != savedDarkMode) {
+            this->settings->setValue("theme/darkMode", checked);
+            QMessageBox::information(this, QStringLiteral("Theme Change"), QStringLiteral("Restarting to apply changes..."));
             QProcess::startDetached(QApplication::applicationFilePath(), QApplication::arguments());
             QApplication::quit();
         }
