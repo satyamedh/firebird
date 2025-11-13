@@ -73,6 +73,9 @@ static void migrateSettings()
 
 int main(int argc, char **argv)
 {
+
+    qputenv("QT_QPA_PLATFORM", "windows:darkmode=2");
+
     #ifdef Q_OS_ANDROID
         QGuiApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
     #else
